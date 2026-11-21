@@ -26,11 +26,7 @@ import {
   formatDate,
 } from '../../lib/time';
 
-interface DoctorDashboardProps {
-  currentUser: User;
-  onOpenVideoRoom: (appointment: Appointment) => void;
-  onOpenPrescriptionModal: (prescription: Prescription) => void;
-}
+
 
 export const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
   currentUser,
