@@ -67,6 +67,9 @@ export default function App() {
           if ((user.mustChangePassword || user.needPasswordChange) && !alreadyChanged) {
             setForcePasswordUser(user);
           }
+          else if ((user.mustChangePassword || user.needPasswordChange) && !alreadyChanged) {
+            setForcePasswordUser(user);
+          }
         }
       } catch {
         // Unauthenticated guest user
