@@ -1096,3 +1096,855 @@ export const PatientDashboard: React.FC<PatientDashboardProps> = ({
     </div>
   );
 };
+
+import React, { useState } from "react";
+import {
+  LayoutDashboard,
+  CalendarDays,
+  Users,
+  FileText,
+  Pill,
+  HeartPulse,
+  Settings,
+  LogOut,
+  Search,
+  Bell,
+  Plus,
+  ChevronRight,
+  Clock,
+  MapPin,
+  Activity,
+  Thermometer,
+  Droplets,
+  Heart,
+  Menu,
+  X,
+  Download,
+  Eye,
+  CheckCircle2,
+  AlertCircle,
+  Stethoscope,
+  UserRound,
+  CalendarCheck,
+  TrendingUp,
+} from "lucide-react";
+
+interface Appointment {
+  id: number;
+  doctor: string;
+  specialty: string;
+  date: string;
+  time: string;
+  status: "Confirmed" | "Pending" | "Completed";
+  image: string;
+}
+
+interface MedicalRecord {
+  id: number;
+  title: string;
+  doctor: string;
+  date: string;
+  type: string;
+}
+
+const appointments: Appointment[] = [
+  {
+    id: 1,
+    doctor: "Dr. Sarah Johnson",
+    specialty: "Cardiologist",
+    date: "Nov 25, 2026",
+    time: "10:30 AM",
+    status: "Confirmed",
+    image: "https://i.pravatar.cc/100?img=47",
+  },
+  {
+    id: 2,
+    doctor: "Dr. Michael Smith",
+    specialty: "Neurologist",
+    date: "Nov 28, 2026",
+    time: "02:00 PM",
+    status: "Pending",
+    image: "https://i.pravatar.cc/100?img=12",
+  },
+  {
+    id: 3,
+    doctor: "Dr. Emily Wilson",
+    specialty: "Dermatologist",
+    date: "Nov 18, 2026",
+    time: "11:00 AM",
+    status: "Completed",
+    image: "https://i.pravatar.cc/100?img=44",
+  },
+];
+
+const medicalRecords: MedicalRecord[] = [
+  {
+    id: 1,
+    title: "Blood Test Report",
+    doctor: "Dr. Sarah Johnson",
+    date: "Nov 18, 2026",
+    type: "Laboratory",
+  },
+  {
+    id: 2,
+    title: "Cardiology Report",
+    doctor: "Dr. Michael Smith",
+    date: "Nov 15, 2026",
+    type: "Medical Report",
+  },
+  {
+    id: 3,
+    title: "Prescription",
+    doctor: "Dr. Emily Wilson",
+    date: "Nov 10, 2026",
+    type: "Prescription",
+  },
+];
+
+const navItems = [
+  { label: "Dashboard", icon: LayoutDashboard },
+  { label: "Appointments", icon: CalendarDays },
+  { label: "Doctors", icon: Users },
+  { label: "Medical Records", icon: FileText },
+  { label: "Prescriptions", icon: Pill },
+  { label: "Health Overview", icon: HeartPulse },
+];
+
+function PatientDashboard() {
+  const [activeNav, setActiveNav] = useState("Dashboard");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  const filteredRecords = medicalRecords.filter((record) =>
+    record.title.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const stats = [
+    {
+      title: "Total Appointments",
+      value: "24",
+      change: "+12%",
+      icon: CalendarCheck,
+      color: "blue",
+      description: "Compared to last month",
+    },
+    {
+      title: "Completed Visits",
+      value: "18",
+      change: "+8%",
+      icon: CheckCircle2,
+      color: "green",
+      description: "Successfully completed",
+    },
+    {
+      title: "Upcoming Visits",
+      value: "03",
+      change: "Next 7 days",
+      icon: Clock,
+      color: "purple",
+      description: "Scheduled appointments",
+    },
+    {
+      title: "Medical Reports",
+      value: "12",
+      change: "+3 new",
+      icon: FileText,
+      color: "orange",
+      description: "Available medical reports",
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-[#f5f8fc] text-slate-800">
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`fixed left-0 top-0 z-50 flex h-screen w-64 flex-col border-r border-slate-100 bg-white transition-transform duration-300 lg:translate-x-0 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="flex h-20 items-center justify-between border-b border-slate-100 px-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white">
+              <HeartPulse size={24} />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-slate-900">
+                MediCare
+              </h1>
+              <p className="text-xs text-slate-400">Patient Portal</p>
+            </div>
+          </div>
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="lg:hidden"
+          >
+            <X size={22} />
+          </button>
+        </div>
+
+        <div className="px-4 py-6">
+          <p className="mb-4 px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+            Main Menu
+          </p>
+
+          <nav className="space-y-2">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const active = activeNav === item.label;
+
+              return (
+                <button
+                  key={item.label}
+                  onClick={() => {
+                    setActiveNav(item.label);
+                    setSidebarOpen(false);
+                  }}
+                  className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition ${
+                    active
+                      ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
+                      : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
+                  }`}
+                >
+                  <Icon size={19} />
+                  {item.label}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+
+        <div className="mt-auto space-y-2 border-t border-slate-100 p-4">
+          <button className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-500 hover:bg-slate-50">
+            <Settings size={19} />
+            Settings
+          </button>
+          <button className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm text-red-500 hover:bg-red-50">
+            <LogOut size={19} />
+            Logout
+          </button>
+
+          <div className="mt-4 rounded-2xl bg-blue-50 p-4">
+            <div className="mb-2 flex items-center gap-2 text-blue-700">
+              <HeartPulse size={20} />
+              <span className="text-sm font-semibold">Need Help?</span>
+            </div>
+            <p className="mb-3 text-xs leading-5 text-slate-500">
+              Contact our support team for assistance.
+            </p>
+            <button className="text-xs font-semibold text-blue-600">
+              Contact Support →
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="min-h-screen lg:ml-64">
+        {/* Header */}
+        <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-slate-100 bg-white/90 px-4 backdrop-blur-md sm:px-8">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="rounded-lg p-2 hover:bg-slate-100 lg:hidden"
+            >
+              <Menu size={23} />
+            </button>
+
+            <div>
+              <h2 className="text-lg font-bold text-slate-800">
+                {activeNav}
+              </h2>
+              <p className="hidden text-xs text-slate-400 sm:block">
+                Welcome back to your health dashboard
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 sm:gap-5">
+            <div className="relative hidden md:block">
+              <Search
+                size={18}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+              <input
+                type="text"
+                placeholder="Search records..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-56 rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm outline-none transition focus:border-blue-400"
+              />
+            </div>
+
+            <div className="relative">
+              <button
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="relative rounded-xl bg-slate-50 p-2.5 text-slate-600 hover:bg-blue-50"
+              >
+                <Bell size={20} />
+                <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500" />
+              </button>
+
+              {showNotifications && (
+                <div className="absolute right-0 top-14 w-72 rounded-2xl border border-slate-100 bg-white p-4 shadow-xl">
+                  <h3 className="mb-3 font-semibold">Notifications</h3>
+                  <p className="text-sm text-slate-500">
+                    Your next appointment is coming soon.
+                  </p>
+                  <button
+                    onClick={() => setShowNotifications(false)}
+                    className="mt-3 text-xs font-semibold text-blue-600"
+                  >
+                    Close
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center gap-3 border-l border-slate-200 pl-3 sm:pl-5">
+              <img
+                src="https://i.pravatar.cc/100?img=11"
+                alt="Patient"
+                className="h-10 w-10 rounded-full object-cover"
+              />
+              <div className="hidden sm:block">
+                <p className="text-sm font-semibold">Badhon Mojumder</p>
+                <p className="text-xs text-slate-400">Patient ID: PT-2026</p>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Dashboard Body */}
+        <div className="space-y-7 p-4 sm:p-8">
+          {/* Welcome Section */}
+          <section className="flex flex-col justify-between gap-5 rounded-3xl bg-gradient-to-r from-blue-700 to-cyan-600 p-6 text-white shadow-xl shadow-blue-100 sm:flex-row sm:items-center sm:p-8">
+            <div>
+              <p className="mb-2 text-sm text-blue-100">
+                Sunday, November 22, 2026
+              </p>
+              <h1 className="text-2xl font-bold sm:text-3xl">
+                Hello, Badhon! 👋
+              </h1>
+              <p className="mt-2 max-w-md text-sm leading-6 text-blue-100">
+                Take control of your health. Check your appointments,
+                medical records and health statistics.
+              </p>
+              <button className="mt-5 flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-blue-700 transition hover:bg-blue-50">
+                <Plus size={18} />
+                Book an Appointment
+              </button>
+            </div>
+
+            <div className="hidden h-36 w-36 items-center justify-center rounded-full border border-white/20 bg-white/10 md:flex">
+              <HeartPulse size={90} strokeWidth={1.2} />
+            </div>
+          </section>
+
+          {/* Statistics */}
+          <section>
+            <div className="mb-5 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-bold">Overview</h2>
+                <p className="text-sm text-slate-400">
+                  Your healthcare summary
+                </p>
+              </div>
+              <button className="text-sm font-medium text-blue-600">
+                This Month
+                <ChevronRight size={16} className="ml-1 inline" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              {stats.map((stat) => {
+                const Icon = stat.icon;
+                const colors: Record<string, string> = {
+                  blue: "bg-blue-50 text-blue-600",
+                  green: "bg-green-50 text-green-600",
+                  purple: "bg-purple-50 text-purple-600",
+                  orange: "bg-orange-50 text-orange-600",
+                };
+
+                return (
+                  <div
+                    key={stat.title}
+                    className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div
+                        className={`flex h-12 w-12 items-center justify-center rounded-xl ${colors[stat.color]}`}
+                      >
+                        <Icon size={23} />
+                      </div>
+                      <span className="text-xs font-semibold text-green-600">
+                        {stat.change}
+                      </span>
+                    </div>
+                    <h3 className="mt-5 text-3xl font-bold">
+                      {stat.value}
+                    </h3>
+                    <p className="mt-1 text-sm font-medium text-slate-600">
+                      {stat.title}
+                    </p>
+                    <p className="mt-1 text-xs text-slate-400">
+                      {stat.description}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* Health Metrics */}
+          <section>
+            <div className="mb-5">
+              <h2 className="text-lg font-bold">Health Overview</h2>
+              <p className="text-sm text-slate-400">
+                Your latest health measurements
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <MetricCard
+                title="Heart Rate"
+                value="72"
+                unit="bpm"
+                icon={Heart}
+                status="Normal"
+                color="red"
+                description="Last measured today"
+              />
+              <MetricCard
+                title="Blood Pressure"
+                value="120/80"
+                unit="mmHg"
+                icon={Activity}
+                status="Normal"
+                color="blue"
+                description="Last measured today"
+              />
+              <MetricCard
+                title="Temperature"
+                value="36.6"
+                unit="°C"
+                icon={Thermometer}
+                status="Normal"
+                color="orange"
+                description="Last measured yesterday"
+              />
+              <MetricCard
+                title="Blood Oxygen"
+                value="98"
+                unit="%"
+                icon={Droplets}
+                status="Normal"
+                color="purple"
+                description="Last measured today"
+              />
+            </div>
+          </section>
+
+          {/* Appointments & Health Profile */}
+          <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+            <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm xl:col-span-2 sm:p-6">
+              <div className="mb-6 flex items-center justify-between">
+                <div>
+                  <h2 className="font-bold">Recent Appointments</h2>
+                  <p className="mt-1 text-xs text-slate-400">
+                    Manage your doctor visits
+                  </p>
+                </div>
+                <button className="text-sm font-semibold text-blue-600">
+                  View All
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {appointments.map((appointment) => (
+                  <div
+                    key={appointment.id}
+                    className="flex flex-col gap-4 rounded-xl border border-slate-100 p-4 transition hover:bg-slate-50 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={appointment.image}
+                        alt={appointment.doctor}
+                        className="h-12 w-12 rounded-full object-cover"
+                      />
+                      <div>
+                        <h3 className="text-sm font-semibold">
+                          {appointment.doctor}
+                        </h3>
+                        <p className="text-xs text-slate-400">
+                          {appointment.specialty}
+                        </p>
+                        <p className="mt-1 flex items-center gap-1 text-xs text-slate-500">
+                          <CalendarDays size={13} />
+                          {appointment.date}
+                          <Clock size={13} className="ml-2" />
+                          {appointment.time}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-3 sm:flex-col sm:items-end">
+                      <StatusBadge status={appointment.status} />
+                      <button className="text-xs font-semibold text-blue-600 hover:underline">
+                        View Details
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Health Profile */}
+            <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+              <div className="mb-5 flex items-center justify-between">
+                <h2 className="font-bold">My Health Profile</h2>
+                <button className="text-blue-600">
+                  <Settings size={18} />
+                </button>
+              </div>
+
+              <div className="mb-6 flex flex-col items-center rounded-2xl bg-blue-50 p-5">
+                <img
+                  src="https://i.pravatar.cc/150?img=11"
+                  alt="Badhon"
+                  className="h-20 w-20 rounded-full border-4 border-white object-cover shadow"
+                />
+                <h3 className="mt-3 font-bold">Badhon Mojumder</h3>
+                <p className="text-xs text-slate-500">Patient ID: PT-2026</p>
+                <span className="mt-3 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+                  Active Patient
+                </span>
+              </div>
+
+              <div className="space-y-4">
+                <ProfileInfo label="Age" value="22 Years" />
+                <ProfileInfo label="Gender" value="Male" />
+                <ProfileInfo label="Blood Group" value="O+" />
+                <ProfileInfo label="Height" value="175 cm" />
+                <ProfileInfo label="Weight" value="65 kg" />
+                <ProfileInfo label="Location" value="Khulna, Bangladesh" />
+              </div>
+
+              <button className="mt-6 w-full rounded-xl border border-blue-200 py-3 text-sm font-semibold text-blue-600 transition hover:bg-blue-50">
+                Edit Profile
+              </button>
+            </div>
+          </section>
+
+          {/* Medical Records */}
+          <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm sm:p-6">
+            <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+              <div>
+                <h2 className="font-bold">Recent Medical Records</h2>
+                <p className="mt-1 text-xs text-slate-400">
+                  Your medical documents and reports
+                </p>
+              </div>
+              <button className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">
+                <Plus size={17} />
+                Add Record
+              </button>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[600px] text-left">
+                <thead>
+                  <tr className="border-b border-slate-100 text-xs text-slate-400">
+                    <th className="pb-4 font-medium">Document Name</th>
+                    <th className="pb-4 font-medium">Doctor</th>
+                    <th className="pb-4 font-medium">Date</th>
+                    <th className="pb-4 font-medium">Type</th>
+                    <th className="pb-4 text-right font-medium">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredRecords.map((record) => (
+                    <tr
+                      key={record.id}
+                      className="border-b border-slate-50 last:border-0"
+                    >
+                      <td className="py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="rounded-lg bg-blue-50 p-2 text-blue-600">
+                            <FileText size={18} />
+                          </div>
+                          <span className="text-sm font-semibold">
+                            {record.title}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-4 text-sm text-slate-500">
+                        {record.doctor}
+                      </td>
+                      <td className="py-4 text-sm text-slate-500">
+                        {record.date}
+                      </td>
+                      <td className="py-4">
+                        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600">
+                          {record.type}
+                        </span>
+                      </td>
+                      <td className="py-4">
+                        <div className="flex justify-end gap-3">
+                          <button className="text-slate-400 hover:text-blue-600">
+                            <Eye size={18} />
+                          </button>
+                          <button className="text-slate-400 hover:text-blue-600">
+                            <Download size={18} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {filteredRecords.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={5}
+                        className="py-8 text-center text-sm text-slate-400"
+                      >
+                        No matching records found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          {/* Bottom Section */}
+          <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+              <div className="mb-5 flex items-center justify-between">
+                <div>
+                  <h2 className="font-bold">Upcoming Visit</h2>
+                  <p className="mt-1 text-xs text-slate-400">
+                    Your next scheduled appointment
+                  </p>
+                </div>
+                <CalendarDays className="text-blue-600" size={22} />
+              </div>
+
+              <div className="rounded-2xl bg-gradient-to-r from-blue-50 to-cyan-50 p-5">
+                <div className="flex items-center gap-3">
+                  <img
+                    src="https://i.pravatar.cc/100?img=47"
+                    alt="Doctor"
+                    className="h-14 w-14 rounded-full object-cover"
+                  />
+                  <div>
+                    <h3 className="font-bold">Dr. Sarah Johnson</h3>
+                    <p className="text-xs text-slate-500">
+                      Cardiologist
+                    </p>
+                  </div>
+                  <span className="ml-auto rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+                    Confirmed
+                  </span>
+                </div>
+
+                <div className="mt-5 grid grid-cols-2 gap-3">
+                  <div className="rounded-xl bg-white p-3">
+                    <CalendarDays
+                      size={18}
+                      className="mb-2 text-blue-600"
+                    />
+                    <p className="text-xs text-slate-400">Date</p>
+                    <p className="mt-1 text-sm font-semibold">
+                      Nov 25, 2026
+                    </p>
+                  </div>
+                  <div className="rounded-xl bg-white p-3">
+                    <Clock size={18} className="mb-2 text-blue-600" />
+                    <p className="text-xs text-slate-400">Time</p>
+                    <p className="mt-1 text-sm font-semibold">
+                      10:30 AM
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-4 flex items-center gap-2 text-xs text-slate-500">
+                  <MapPin size={15} />
+                  City Medical Center, Khulna
+                </div>
+              </div>
+
+              <button className="mt-5 w-full rounded-xl bg-blue-600 py-3 text-sm font-semibold text-white hover:bg-blue-700">
+                View Appointment Details
+              </button>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+              <h2 className="font-bold">Quick Actions</h2>
+              <p className="mt-1 text-xs text-slate-400">
+                Access your healthcare services
+              </p>
+
+              <div className="mt-5 grid grid-cols-2 gap-4">
+                <QuickAction
+                  icon={CalendarDays}
+                  title="Book Appointment"
+                  color="blue"
+                />
+                <QuickAction
+                  icon={FileText}
+                  title="Medical Records"
+                  color="green"
+                />
+                <QuickAction
+                  icon={Pill}
+                  title="My Prescriptions"
+                  color="purple"
+                />
+                <QuickAction
+                  icon={UserRound}
+                  title="Find a Doctor"
+                  color="orange"
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* Footer */}
+          <footer className="flex flex-col items-center justify-between gap-3 border-t border-slate-200 py-6 text-xs text-slate-400 sm:flex-row">
+            <p>
+              © 2026 MediCare Patient Portal. All rights reserved.
+            </p>
+            <div className="flex gap-5">
+              <button className="hover:text-blue-600">Privacy Policy</button>
+              <button className="hover:text-blue-600">Terms</button>
+              <button className="hover:text-blue-600">Help Center</button>
+            </div>
+          </footer>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+interface MetricCardProps {
+  title: string;
+  value: string;
+  unit: string;
+  icon: React.ElementType;
+  status: string;
+  color: string;
+  description: string;
+}
+
+function MetricCard({
+  title,
+  value,
+  unit,
+  icon: Icon,
+  status,
+  color,
+  description,
+}: MetricCardProps) {
+  const colorMap: Record<string, string> = {
+    red: "bg-red-50 text-red-500",
+    blue: "bg-blue-50 text-blue-600",
+    orange: "bg-orange-50 text-orange-500",
+    purple: "bg-purple-50 text-purple-600",
+  };
+
+  return (
+    <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <div className="flex items-center justify-between">
+        <div
+          className={`flex h-11 w-11 items-center justify-center rounded-xl ${colorMap[color]}`}
+        >
+          <Icon size={22} />
+        </div>
+        <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-600">
+          {status}
+        </span>
+      </div>
+
+      <p className="mt-5 text-sm text-slate-500">{title}</p>
+      <div className="mt-1 flex items-baseline gap-2">
+        <h3 className="text-2xl font-bold text-slate-800">{value}</h3>
+        <span className="text-xs text-slate-400">{unit}</span>
+      </div>
+      <p className="mt-2 text-xs text-slate-400">{description}</p>
+    </div>
+  );
+}
+
+interface StatusBadgeProps {
+  status: Appointment["status"];
+}
+
+function StatusBadge({ status }: StatusBadgeProps) {
+  const styles: Record<Appointment["status"], string> = {
+    Confirmed: "bg-green-50 text-green-600",
+    Pending: "bg-orange-50 text-orange-600",
+    Completed: "bg-blue-50 text-blue-600",
+  };
+
+  return (
+    <span
+      className={`rounded-full px-3 py-1.5 text-xs font-semibold ${styles[status]}`}
+    >
+      {status}
+    </span>
+  );
+}
+
+interface ProfileInfoProps {
+  label: string;
+  value: string;
+}
+
+function ProfileInfo({ label, value }: ProfileInfoProps) {
+  return (
+    <div className="flex items-center justify-between border-b border-slate-100 pb-3 last:border-0">
+      <span className="text-xs text-slate-400">{label}</span>
+      <span className="text-xs font-semibold text-slate-700">{value}</span>
+    </div>
+  );
+}
+
+interface QuickActionProps {
+  icon: React.ElementType;
+  title: string;
+  color: string;
+}
+
+function QuickAction({ icon: Icon, title, color }: QuickActionProps) {
+  const colors: Record<string, string> = {
+    blue: "bg-blue-50 text-blue-600",
+    green: "bg-green-50 text-green-600",
+    purple: "bg-purple-50 text-purple-600",
+    orange: "bg-orange-50 text-orange-600",
+  };
+
+  return (
+    <button className="group rounded-2xl border border-slate-100 p-4 text-left transition hover:border-blue-200 hover:bg-blue-50/50">
+      <div
+        className={`mb-3 flex h-11 w-11 items-center justify-center rounded-xl ${colors[color]} transition group-hover:scale-110`}
+      >
+        <Icon size={21} />
+      </div>
+      <p className="text-sm font-semibold text-slate-700">{title}</p>
+      <p className="mt-1 text-xs text-slate-400">
+        Access now →
+      </p>
+    </button>
+  );
+}
+
+export default PatientDashboard;
